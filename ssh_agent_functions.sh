@@ -20,15 +20,16 @@ fi
 
 # ssh end
 sshe () {
-if [ -e $SSH_AUTH_SOCK ]; then
-        sshk
-fi
+        if [ -e $SSH_AUTH_SOCK ]; then
+                sshk
+        fi
+        hangssh
 }
 
 # Just kill regardless of the existing agent
 sshkill () { eval `ssh-agent -k`; }
 
-# ssh kill
+# ssh kill all agents
 sshk () (
         searchkill () (
                 export SSH_AGENT_PID=$1
@@ -43,6 +44,10 @@ sshk () (
                         kill $! >/dev/null 2>&1
                 done
         fi
+)
+
+# Check for hanging ssh sockets
+hangssh () {
         SOCKN=$(ls -l /tmp/ | grep ssh-* | wc -l)
         WMSGFPATH="$HOME/HANGING_SSH"
         if [ $SOCKN -gt 0 ]; then
@@ -55,4 +60,4 @@ sshk () (
                         rm $WMSGFPATH
                 fi
         fi
-)
+}
