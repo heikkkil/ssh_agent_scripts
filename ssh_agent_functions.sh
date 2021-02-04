@@ -4,11 +4,11 @@
 # For other users of the function, define your private key path for ssh-add on line 14.
 sshs () {
 if [ "$#" -lt 1 ]; then
-        if [ ! -S $SSH_AUTH_SOCK ]; then
+        if [ -z $SSH_AUTH_SOCK ]; then
                 eval `ssh-agent`;
         fi
 else
-        if [ ! -S $SSH_AUTH_SOCK ]; then
+        if [ -z $SSH_AUTH_SOCK ]; then
                 eval `ssh-agent`;
         fi
         for key in $@
@@ -20,7 +20,7 @@ fi
 
 # ssh end
 sshe () {
-if [ -S $SSH_AUTH_SOCK ]; then
+if [ -n $SSH_AUTH_SOCK ]; then
         sshk
 fi
 }
