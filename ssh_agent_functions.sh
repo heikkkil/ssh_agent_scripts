@@ -4,11 +4,11 @@
 # For other users of the function, define your private key path for ssh-add on line 14.
 sshs () {
 if [ "$#" -lt 1 ]; then
-        if [ -z $SSH_AUTH_SOCK ]; then
+        if [ ! -e $SSH_AUTH_SOCK ] || [ -z ${SSH_AUTH_SOCK+x} ]; then
                 eval `ssh-agent`;
         fi
 else
-        if [ -z $SSH_AUTH_SOCK ]; then
+        if [ ! -e $SSH_AUTH_SOCK ] || [ -z ${SSH_AUTH_SOCK+x} ]; then
                 eval `ssh-agent`;
         fi
         for key in $@
@@ -20,7 +20,7 @@ fi
 
 # ssh end
 sshe () {
-if [ -n $SSH_AUTH_SOCK ]; then
+if [ -e $SSH_AUTH_SOCK ]; then
         sshk
 fi
 }
@@ -43,8 +43,6 @@ sshk () (
                         kill $! >/dev/null 2>&1
                 done
         fi
-        unset SSH_AGENT_PID
-        unset SSH_AUTH_SOCK
         SOCKN=$(ls -l /tmp/ | grep ssh-* | wc -l)
         WMSGFPATH="$HOME/HANGING_SSH"
         if [ $SOCKN -gt 0 ]; then
