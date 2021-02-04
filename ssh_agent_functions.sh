@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # ssh start
 # For other users of the function, define your private key path for ssh-add on line 14.
 sshs () {
