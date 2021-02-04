@@ -1,21 +1,22 @@
 #!/bin/bash
 
 # ssh start
-# For other users of the function, define your private key path for ssh-add on line 14.
 sshs () {
-if [ "$#" -lt 1 ]; then
-        if [ ! -e $SSH_AUTH_SOCK ] || [ -z ${SSH_AUTH_SOCK+x} ]; then
-                eval `ssh-agent`;
+        # Absolute path to private keys
+        PKPATH="$HOME/.ssh"
+        if [ "$#" -lt 1 ]; then
+                if [ ! -e $SSH_AUTH_SOCK ] || [ -z ${SSH_AUTH_SOCK+x} ]; then
+                        eval `ssh-agent`;
+                fi
+        else
+                if [ ! -e $SSH_AUTH_SOCK ] || [ -z ${SSH_AUTH_SOCK+x} ]; then
+                        eval `ssh-agent`;
+                fi
+                for key in $@
+                do
+                        ssh-add $PKPATH$key
+                done
         fi
-else
-        if [ ! -e $SSH_AUTH_SOCK ] || [ -z ${SSH_AUTH_SOCK+x} ]; then
-                eval `ssh-agent`;
-        fi
-        for key in $@
-        do
-                ssh-add ~/.ssh/$key
-        done
-fi
 }
 
 # ssh end
@@ -29,7 +30,7 @@ sshe () {
 # Just kill regardless of the existing agent
 sshkill () { eval `ssh-agent -k`; }
 
-# ssh kill all agents
+# Kill all ssh agents
 sshk () (
         searchkill () (
                 export SSH_AGENT_PID=$1
