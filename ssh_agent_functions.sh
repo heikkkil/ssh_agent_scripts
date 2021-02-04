@@ -31,14 +31,12 @@ sshkill () { eval `ssh-agent -k`; }
 # ssh kill
 sshk () (
         searchkill () (
-                #export SSH_AGENT_PID=$(pidof ssh-agent | awk '{print $1;}')
                 export SSH_AGENT_PID=$1
                 eval `ssh-agent -k`;
                 echo "ssh agent killed"
         )
         PSCOUNT=$(pgrep -f ssh-agent | wc -l)
         if [ $PSCOUNT -ne 0 ]; then
-                #for i in {1..$PSCOUNT} #not working
                 for AGENT in $(pidof ssh-agent | awk '{print $0;}'); do
                         searchkill $AGENT &
                         sleep .5
