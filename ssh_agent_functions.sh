@@ -12,9 +12,9 @@ sshs () {
                 if [ ! -e $SSH_AUTH_SOCK ] || [ -z ${SSH_AUTH_SOCK+x} ]; then
                         eval `ssh-agent`;
                 fi
-                for key in $@
+                for KEY in $@
                 do
-                        ssh-add $PKPATH$key
+                        ssh-add $PKPATH$KEY
                 done
         fi
 }
