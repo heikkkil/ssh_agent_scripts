@@ -43,10 +43,10 @@ To just kill all ssh-agent processes accordingly (even the ones which are not bo
 `sshk`  
 This is used by the sshe function.  
   
-To just kill the *currently running* ssh-agent accordingly, call:
+To just kill the *currently running* ssh-agent accordingly, call:  
 `sshkill`
   
-To check for hanging ssh sockets separately, call:
+To check for hanging ssh sockets separately, call:  
 `hangssh`  
 If any hanging sockets are found, it prompts you for their removal while leaving a possibly active socket untouched.  
   
