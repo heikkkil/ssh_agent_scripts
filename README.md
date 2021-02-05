@@ -14,7 +14,7 @@ Tested on Debian 10 on WSL2 with GNU bash, version 5.0.3(1)-release (x86_64-pc-l
 Download the ssh_agent_functions.sh script file directly or clone the repository.  
 `git clone https://github.com/heikkkil/ssh_agent_scripts.git`  
   
-Source the script file at your `.bashrc`.  
+Source the script file at your .bashrc file.  
 `echo "source path_to_script_file/ssh_agent_functions.sh" >> $HOME/.bashrc`  
     
 ## Uninstall  
