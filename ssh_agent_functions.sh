@@ -29,19 +29,19 @@ sshe () {
         hangssh
 }
 
-# Just kill regardless of the existing agent
-sshkill () { eval `ssh-agent -k`; }
-
 # Kill all ssh agents
 sshk () (
-	# Kill currently iterated pid
+        # Assign iterated pid and kill current ssh-agent accordingly
         searchkill () (
                 export SSH_AGENT_PID=$1
                 eval `ssh-agent -k`;
                 echo "ssh agent killed"
         )
-	# Count of ssh-agent processes
-	PSCOUNT=$(pgrep -f ssh-agent | wc -l)
+
+        # Count of ssh-agent processes
+        PSCOUNT=$(pgrep -f ssh-agent | wc -l)
+
+        # Kill all ssh-agents
         if [ $PSCOUNT -ne 0 ]; then
                 for AGENT in $(pidof ssh-agent | awk '{print $0;}'); do
                         searchkill $AGENT &
@@ -51,33 +51,40 @@ sshk () (
         fi
 )
 
+# Just kill regardless of the existing agent
+sshkill () { eval `ssh-agent -k`; }
+
 # Check for hanging ssh sockets
 hangssh () {
-	# System's tmp directory
-	SOCKTMPDIR="$(dirname $(mktemp -u))/"
-	# Count of ssh-agent processes
+        # System's tmp directory
+        SOCKTMPDIR="$(dirname $(mktemp -u))/"
+        # Count of ssh-agent processes
         PSCOUNT=$(pgrep -f ssh-agent | wc -l)
-	# Number of ssh sockets
-	SOCKN=$(($(ls -l $SOCKTMPDIR | grep ssh-* | wc -l)-$PSCOUNT))
 
-	if [ $PSCOUNT -gt 1 ]; then
-		echo "Warning: $PSCOUNT ssh-agent(s) running, $(($PSCOUNT-1)) \
+        # Warn if more than one ssh-agents are running
+        if [ $PSCOUNT -gt 1 ]; then
+                echo "Warning: $PSCOUNT ssh-agent(s) running, $(($PSCOUNT-1)) \
 will propably be left hanging."
-	fi
+        fi
 
-	# Path for warning message file
-	WMSGFPATH="$HOME/HANGING_SSH"
+        # Path for warning message file
+        WMSGFPATH="$HOME/HANGING_SSH"
+        # Number of hanging ssh sockets at SOCKTMPDIR
+        SOCKN=$(($(ls -l $SOCKTMPDIR | grep ssh-* | wc -l)-$PSCOUNT))
 
-	if [ $SOCKN -gt 0 ]; then
-		# Generate a warning message and a warning message file
-		WMSG="Warning: $SOCKN hanging socket(s) at $SOCKTMPDIR"
+        # Generate a warning message and a warning message file
+        if [ $SOCKN -gt 0 ]; then
+                WMSG="Warning: $SOCKN hanging socket(s) at $SOCKTMPDIR"
                 touch $WMSGFPATH
                 echo $WMSG > $WMSGFPATH
                 echo $WMSG
-		# Prompt for ssh socket removal
-		rmhangssh
-        else
-		# Remove warning message file
+                # Prompt for ssh socket removal
+                rmhangssh
+        fi
+
+        # Remove warning message file if appropriate
+        SOCKN=$(($(ls -l $SOCKTMPDIR | grep ssh-* | wc -l)-$PSCOUNT))
+        if [ $SOCKN -eq 0 ]; then
                 if [ -f $WMSGFPATH ]; then
                         rm $WMSGFPATH
                 fi
