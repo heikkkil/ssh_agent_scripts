@@ -53,53 +53,58 @@ If any hanging sockets are found, it prompts you for their removal while leaving
 To just remove all hanging ssh sockets from the system's temporary file directory, call:  
 `rmhangssh`  
   
-# Functions
+# Function documentation
 
 ## sshs
 Start ssh-agent.  
 
 Usage: `sshs [private_key ...]`  
 
-private_key is the name of the file which will be appended to the default key directory path. By default the private key directory path is set to `$HOME/.ssh/`. The default path can be changed by editing the function's variable PKPATH value. The given keys will be added to the ssh-agent with ssh-add. Multiple private keys can be given.  
+The private_key parameters are the names of the private key files which will be appended to the default key directory path. By default the private key directory path is set to $HOME/.ssh/. The default path can be changed by editing the function's variable PKPATH value. The given keys will be added to the ssh-agent with ssh-add. Multiple private keys can be given.  
 
-If no private key arguments were give, the ssh-agent will be started with no added keys. The function won't start new ssh-agent processes if there is an existing one. 
+If no private key arguments were give, the ssh-agent will be started with no added keys. The function won't start new ssh-agent processes if there is an existing one. In that case a notification will be echoed to stdout.  
+  
+The existing ssh-agent is tested against the ssh-socket's existance pointed by SSH_AUTH_SOCK variable. Also, during startup ssh-agent is considered not to exist if the SSH_AUTH_SOCK variable is empty. Therefore, unsetting the SSH_AUTH_SOCK variable despite a running ssh-agent can lead to faulty behaviour. For future, additional test for running ssh-agent processes should be added.  
   
 ## sshe
 End ssh-agent.  
   
 Usage: `sshe`  
   
-todo  
+If ssh-socket pointed by SSH_AUTH_SOCK variable exists, the sshk function will be called to kill all running ssh-agents accordingly. Wheter ssh-agents killed or not, hangssh function will be called to check for hanging ssh-sockets with a possible prompt for their removal. Yet again, unsetting the SSH_AUTH_SOCK variable despite a running ssh-agent can lead the process to fall through the hanging socket check. For future, additional test for running ssh-agent processes should be added.  
   
 ## sshk
 Kill all ssh-agents.  
   
 Usage: `sshk`  
   
-todo  
+Extracts all ssh-agent processes and iterates throught them to export their pids to the SSH_AGENT_PID in order to kill them correctly. Succesful kill for each process will be echoed to stdout. However, if the number of ssh-agent processes are 0 nothing will be done and nothing will be echoed.  
   
 ## sshkill  
-Just kill regardless of the ssh-agent's existance.  
+Just kill current ssh-agent regardless of it's existance.  
   
 Usage: `sshkill`  
   
-todo  
+Simple wrapper function for the eval \`ssh-agent -k\` command.  
   
 ## hangssh  
-Check for hanging ssh sockets.
+Check for hanging ssh sockets and prompt for their removal.  
   
 Usage: `hangssh`  
   
-todo  
-
+Checks for all hanging ssh sockets directories at your system's temporary file directory and informs by echoing to stdout if any were found. In addition to the warning message a warning message file called HANGING_SSH will be created to $HOME directory as a reminder. Then rmhangssh function will be called to prompt for the possible removal of the hanging ssh sockets. The prompt defaults to yes (remove hangning ssh sockets). In this case the warning message file will be removed automatically without a separate notice if no hangning ssh sockets are found remaining after their removal.  
+  
+The check counts all hanging ssh socket directories against a pattern. A possibly active ssh socket will remain uncounted and in case of removal, it will also remain. The method for removing all but the active ssh socket directories makes a temporary backup of the active socket directory and rolls it back after removing the others. This method didn't seem to interrup any idle connections. Still the function should be used with caution (don't use) if any traffic is happening via ssh at the moment.  
+  
+Also, a warning is echoed to stdout about potentially to-be-hanged ssh-agent processes will be given if number of ssh-agent processes is over one.  
+  
 ## rmhangssh  
 Prompt for removing hanging ssh sockets.  
   
 Usage: `rmhangssh`  
   
-todo
+Basic y/n prompt for removing all hanging ssh socket directories from yout system's temporary file directory. The prompt defaults to yes. The function doesn't remove a possibly active ssh-socket.  
   
   
 # TODO:  
-- Fix randomly occuring [process exited with code 1] (something to do with subshells?)
-- readme
+- Fix randomly occuring [process exited with code 1] on WSL2 (something to do with subshells?)
