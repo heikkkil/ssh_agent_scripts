@@ -19,6 +19,7 @@ sshs () {
                         ssh-add $PKPATH$KEY
                 done
         fi
+	return 0;
 }
 
 # ssh end
@@ -27,6 +28,7 @@ sshe () {
                 sshk
         fi
         hangssh
+	return 0;
 }
 
 # Kill all ssh agents
@@ -49,6 +51,7 @@ sshk () (
                         kill $! >/dev/null 2>&1
                 done
         fi
+	return 0;
 )
 
 # Just kill regardless of the existing agent
@@ -89,6 +92,7 @@ will propably be left hanging."
                         rm $WMSGFPATH
                 fi
         fi
+	return 0;
 }
 
 # Remove all ssh sockets
@@ -130,4 +134,5 @@ $TMPDIR? [Y/n] " yn
 			echo "done"
 		fi
 	fi
+	return 0;
 )
