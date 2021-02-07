@@ -104,7 +104,4 @@ Prompt for removing hanging ssh sockets.
 Usage: `rmhangssh`  
   
 Basic y/n prompt for removing all hanging ssh socket directories from yout system's temporary file directory. The prompt defaults to yes. The function doesn't remove a possibly active ssh-socket.  
-  
-  
-# TODO:  
-- Fix randomly occuring [process exited with code 1] on WSL2 (something to do with subshells?)
+
