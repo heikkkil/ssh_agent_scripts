@@ -104,4 +104,6 @@ Prompt for removing hanging ssh sockets.
 Usage: `rmhangssh`  
   
 Basic y/n prompt for removing all hanging ssh socket directories from yout system's temporary file directory. The prompt defaults to yes. The function doesn't remove a possibly active ssh-socket.  
-
+  
+The function is meant to be used in the end of the hangssh function and thereby it isn't aware of the actual ssh-socket directory count.  
+  
