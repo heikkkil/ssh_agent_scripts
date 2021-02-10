@@ -3,7 +3,7 @@
 # ssh start
 sshs () {
         # Absolute path to private keys
-        PKPATH="$HOME/.ssh"
+        PKPATH="$HOME/.ssh/"
         if [ "$#" -lt 1 ]; then
                 if [ ! -e $SSH_AUTH_SOCK ] || [ -z ${SSH_AUTH_SOCK+x} ]; then
                         eval `ssh-agent`;
